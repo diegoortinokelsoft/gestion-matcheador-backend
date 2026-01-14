@@ -7,6 +7,7 @@ import { AppController } from './app.controller';
 import { RolesModule } from './roles/roles.module';
 import { SessionsModule } from './sessions/sessions.module';
 import { SupabaseModule } from './supabase/supabase.module';
+import { SheetsModule } from './sheets/sheets.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -21,6 +22,7 @@ import { UsersModule } from './users/users.module';
     RolesModule,
     SessionsModule,
     AppscriptsModule,
+    SheetsModule,
   ],
   controllers: [AppController],
 })

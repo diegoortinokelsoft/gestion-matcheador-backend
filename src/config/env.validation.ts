@@ -9,6 +9,7 @@ export const envSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
 
   SUPABASE_JWT_SECRET: z.string().min(1).optional(),
+  SUPABASE_RESET_PASSWORD_REDIRECT_URL: z.string().url().optional(),
   ALLOWED_ORIGINS: z
     .string()
     .min(1)
@@ -21,6 +22,15 @@ export const envSchema = z.object({
 
   APPSCRIPT_BASE_URL: z.string().url(),
   APPSCRIPT_INTERNAL_TOKEN: z.string().min(20),
+  APPSCRIPT_TIMEOUT_MS: z.coerce.number().int().positive().default(10000),
+
+  RATE_LIMIT_AUTH_LOGIN_PER_IP: z.coerce.number().int().positive().default(20),
+  RATE_LIMIT_AUTH_LOGIN_PER_EMAIL: z.coerce.number().int().positive().default(10),
+  RATE_LIMIT_AUTH_LOGIN_WINDOW_SECONDS: z.coerce.number().int().positive().default(900),
+
+  RATE_LIMIT_AUTH_RECOVERY_PER_IP: z.coerce.number().int().positive().default(10),
+  RATE_LIMIT_AUTH_RECOVERY_PER_EMAIL: z.coerce.number().int().positive().default(5),
+  RATE_LIMIT_AUTH_RECOVERY_WINDOW_SECONDS: z.coerce.number().int().positive().default(3600),
 });
 
 export type Env = z.infer<typeof envSchema>;
@@ -38,4 +48,3 @@ export function validateEnv(config: Record<string, unknown>) {
 
   throw new Error(`Invalid environment variables:\n${message}`);
 }
-

@@ -5,13 +5,14 @@ import { Strategy } from 'passport-custom';
 import { SupabaseService } from '../../supabase/supabase.service';
 import type { RequestUser } from '../../common/types/request-user.type';
 
-function extractBearerToken(req: Request): string | null {
-  const header = req.headers.authorization;
-  if (!header) return null;
-  const [scheme, token] = header.split(' ');
-  if (scheme?.toLowerCase() !== 'bearer') return null;
-  if (!token) return null;
-  return token.trim();
+const ACCESS_TOKEN_COOKIE_NAME = 'access_token';
+
+function extractAccessToken(req: Request): string | null {
+  const cookies = (req as Request & { cookies?: Record<string, unknown> }).cookies;
+  const token = cookies?.[ACCESS_TOKEN_COOKIE_NAME];
+  if (typeof token !== 'string') return null;
+  const trimmed = token.trim();
+  return trimmed ? trimmed : null;
 }
 
 function decodeJwtPayload(token: string): Record<string, unknown> | null {
@@ -37,9 +38,9 @@ export class SupabaseJwtStrategy extends PassportStrategy(Strategy, 'supabase-jw
   }
 
   async validate(req: Request): Promise<RequestUser> {
-    const accessToken = extractBearerToken(req);
+    const accessToken = extractAccessToken(req);
     if (!accessToken) {
-      throw new UnauthorizedException('Missing bearer token');
+      throw new UnauthorizedException('Missing access token cookie');
     }
 
     const { data, error } = await this.supabaseService.clientAnon.auth.getUser(
@@ -57,4 +58,3 @@ export class SupabaseJwtStrategy extends PassportStrategy(Strategy, 'supabase-jw
     };
   }
 }
-
